@@ -1,18 +1,18 @@
 const express = require('express');
 // Rutas de productos
-const entriesController = require("../controllers/entries.controller");
+const authorsController = require("../controllers/author.controller");
 const router = express.Router();
 
-router.get('/', entriesController.getEntries);
-router.post('/', entriesController.createEntry);
-router.put('/', entriesController.updateEntry);
-router.delete('/', entriesController.deleteEntry);
+router.get('/', authorsController.getAuthors);
+router.post('/', authorsController.createAuthor);
+router.put('/', authorsController.updateAuthor);
+router.delete('/', authorsController.deleteAuthor);
 
 module.exports = router;
 
-// GET http://localhost:3000/api/entries --> ALL
-// GET http://localhost:3000/api/entries?email=hola@gmail.com --> por email
-// POST http://localhost:3000/api/entries
+// GET http://localhost:3000/api/authors --> ALL
+// GET http://localhost:3000/api/authors?email=hola@gmail.com --> por email
+// POST http://localhost:3000/api/authors
 /*
 {
     "title":"noticia desde Node",
@@ -22,7 +22,7 @@ module.exports = router;
 }
     */
 
-// PUT http://localhost:3000/api/entries
+// PUT http://localhost:3000/api/authors
 // {
 //     "title": "Estamos de Lunes de Back 3",
 //     "content": "La venganza del elefante relacional SQL",
