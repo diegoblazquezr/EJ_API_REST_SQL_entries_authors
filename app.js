@@ -3,8 +3,9 @@ const app = express(); // Inicializar servidor
 const port = 3000;
 
 // Importar Middlewares
-// const error404 = require('./middlewares/error404');
+const error404 = require('./middlewares/error404');
 const morgan = require('./middlewares/morgan');
+// const { query } = require('express-validator');
 
 // Logger
 app.use(morgan(':method :url :status :param[id] - :response-time ms :body'));
@@ -13,6 +14,7 @@ app.use(morgan(':method :url :status :param[id] - :response-time ms :body'));
 const entriesRoutes = require("./routes/entries.routes");
 const authorsRoutes = require("./routes/author.routes");
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Habilito recepción de JSON en servidor
 
 app.get("/", (req, res) => {
@@ -22,7 +24,8 @@ app.get("/", (req, res) => {
 // Rutas
 //API
 app.use('/api/entries',entriesRoutes);
-app.use('/api/authors', authorsRoutes)
+app.use('/api/authors', authorsRoutes);
+app.use('*',error404);
 
 
 app.listen(port, () => {

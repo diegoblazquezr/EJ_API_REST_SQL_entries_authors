@@ -1,4 +1,5 @@
 const entry = require('../models/entries.model'); // Importar el modelo de la BBDD
+const { validationResult } = require("express-validator");
 
 //getEntries
 // if(hay email)
@@ -12,7 +13,11 @@ const entry = require('../models/entries.model'); // Importar el modelo de la BB
 const getEntries = async (req, res) => {
     let entries;
     try {
-        if (req.query.email) {
+        if (req.query.email || req.query.email == "") {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
             entries = await entry.getEntriesByEmail(req.query.email);
         }
         else {
@@ -24,17 +29,16 @@ const getEntries = async (req, res) => {
     }
 }
 
-//createEntry
-// POST http://localhost:3000/api/entries
-// let newEntry = {
-//     title:"noticia desde Node",
-//     content:"va a triunfar esto2",
-//     email:"alejandru@thebridgeschool.es",
-//     category:"sucesos"}
-
-// Crear entry por email
 const createEntry = async (req, res) => {
-    const newEntry = req.body; // {title,content,email,category}
+    // Validate request
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const newEntry = req.body; // {title, content, email, category}
+
+    // Check if all required fields are present
     if (
         "title" in newEntry &&
         "content" in newEntry &&
@@ -42,8 +46,10 @@ const createEntry = async (req, res) => {
         "category" in newEntry
     ) {
         try {
+            // Create entry in the database
             const response = await entry.createEntry(newEntry);
             res.status(201).json({
+                success: true,
                 items_created: response,
                 data: newEntry,
             });
@@ -55,8 +61,51 @@ const createEntry = async (req, res) => {
     }
 };
 
+
+//createEntry
+// POST http://localhost:3000/api/entries
+// let newEntry = {
+//     title:"noticia desde Node",
+//     content:"va a triunfar esto2",
+//     email:"alejandru@thebridgeschool.es",
+//     category:"sucesos"}
+
+// Crear entry por email
+// const createEntry = async (req, res) => {
+//     const newEntry = req.body; // {title,content,email,category}
+//     if (
+//         "title" in newEntry &&
+//         "content" in newEntry &&
+//         "email" in newEntry &&
+//         "category" in newEntry
+//     ) {
+//         try {
+//             const response = await entry.createEntry(newEntry);
+//             const errors = validateCreateEntries(req);
+
+//             if (!errors.isEmpty()) {
+//                 return res.send({ errors: result.array() });
+//             }
+//             res.status(201).json({
+//                 success: true ,
+//                 items_created: response,
+//                 data: newEntry,
+//             });
+//         } catch (error) {
+//             res.status(500).json({ error: "Error en la BBDD" });
+//         }
+//     } else {
+//         res.status(400).json({ error: "Faltan campos en la entrada" });
+//     }
+// };
+
 // PUT http://localhost:3000/api/entries
+
 const updateEntry = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const modifiedEntry = req.body; // {title,content,date,email,category,old_title}
     if (
         "title" in modifiedEntry &&
@@ -90,14 +139,19 @@ const updateEntry = async (req, res) => {
 }
 */
 const deleteEntry = async (req, res) => {
-    let entries;
+    // Validate request
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
-            entries = await entry.deleteEntries(req.query.title);
+        const entries = await entry.deleteEntry(req.query.title);
         res.status(200).json(entries); // [] con las entries encontradas
     } catch (error) {
         res.status(500).json({ error: 'Error en la BBDD' });
     }
-}
+};
 
 module.exports = {
     getEntries,

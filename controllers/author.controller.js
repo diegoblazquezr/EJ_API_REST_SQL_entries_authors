@@ -1,4 +1,5 @@
 const author = require('../models/author.model'); // Importar el modelo de la BBDD
+const { validationResult } = require("express-validator");
 
 //getAuthors
 // if(hay email)
@@ -11,7 +12,11 @@ const author = require('../models/author.model'); // Importar el modelo de la BB
 const getAuthors = async (req, res) => {
     let authors;
     try {
-        if (req.query.email) {
+        if (req.query.email || req.query.email == "") {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
             authors = await author.getAuthorsByEmail(req.query.email);
         }
         else {
@@ -33,6 +38,10 @@ const getAuthors = async (req, res) => {
 
 // Crear author por email
 const createAuthor = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const newAuthor = req.body; // {title,content,email,category}
     if (
         "name" in newAuthor &&
@@ -65,7 +74,11 @@ const createAuthor = async (req, res) => {
 
 // PUT http://localhost:3000/api/authors
 const updateAuthor = async (req, res) => {
-    const modifiedAuthor = req.body; 
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    const modifiedAuthor = req.body;
     if (
         "name" in modifiedAuthor &&
         "surname" in modifiedAuthor &&
@@ -96,9 +109,13 @@ const updateAuthor = async (req, res) => {
 }
 */
 const deleteAuthor = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     let authors;
     try {
-            authors = await author.deleteAuthor(req.query.email);
+        authors = await author.deleteAuthor(req.query.email);
         res.status(200).json(authors); // [] con las authors encontradas
     } catch (error) {
         res.status(500).json({ error: 'Error en la BBDD' });

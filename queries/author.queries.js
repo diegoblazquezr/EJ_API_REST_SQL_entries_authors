@@ -1,5 +1,5 @@
-const { updateAuthor } = require("../controllers/author.controller");
-const { createAuthor } = require("../models/author.model");
+// const { updateAuthor } = require("../controllers/author.controller");
+// const { createAuthor } = require("../models/author.model");
 
 const queries = {
     getAllAuthors: `SELECT * FROM authors;`,

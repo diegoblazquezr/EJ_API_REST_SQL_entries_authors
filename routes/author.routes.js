@@ -1,12 +1,13 @@
 const express = require('express');
-// Rutas de productos
-const authorsController = require("../controllers/author.controller");
 const router = express.Router();
+const authorsController = require("../controllers/author.controller");
+const { validateGetAuthorsByEmail, validateCreateAuthors, validateUpdateAuthors, validateDeleteAuthor } = require("../validators/author.validators");
 
-router.get('/', authorsController.getAuthors);
-router.post('/', authorsController.createAuthor);
-router.put('/', authorsController.updateAuthor);
-router.delete('/', authorsController.deleteAuthor);
+
+router.get('/', validateGetAuthorsByEmail, authorsController.getAuthors);
+router.post('/', validateCreateAuthors, authorsController.createAuthor);
+router.put('/', validateUpdateAuthors, authorsController.updateAuthor);
+router.delete('/', validateDeleteAuthor, authorsController.deleteAuthor);
 
 module.exports = router;
 
